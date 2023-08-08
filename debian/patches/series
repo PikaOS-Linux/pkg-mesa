@@ -1,18 +1,3 @@
-4bf83d4b3ba578a244c38945d002d6d24f439b54.patch
-07_gallium-fix-build-failure-on-powerpcspe.diff
-path_max.diff
-src_glx_dri_common.h.diff
-
-
-#kisak-mesa PPA Backports:
-version
-0001_radv_amdgpu:_Remove_unnecessary_assertions_from_chaining..patch
-0002_radv:_Disallow_IB2_on_GFX6_when_using_draw_indirect_multi..patch
-0003_radv:_Use_IB_BOs_(chaining)_by_default_on_GFX6..patch
-0004_radv:_Chain_command_buffers_on_GFX6_in_radv_queue..patch
-0005_amd:_Rename_INDIRECT_BUFFER_CIK_to_just_INDIRECT_BUFFER..patch
-0006_radv:_Simplify_IB2_workaround..patch
-0007_radv:_Remove_IB2_workaround_from_mesh_shader_draws..patch
-0008_radv:_Enable_IB2_workaround_on_all_indirect_draws..patch
-0009_anv:_override_vendorID_for_Cyberpunk_2077.patch
-0010_util_driconf:_pin_minImageCount_to_three_for_Path_of_Exile.patch
+#07_gallium-fix-build-failure-on-powerpcspe.diff
+#path_max.diff
+#src_glx_dri_common.h.diff

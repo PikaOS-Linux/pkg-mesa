@@ -1,14 +1,16 @@
+#! /bin/bash
+set -e
+
 # Clone Upstream
 git clone https://gitlab.freedesktop.org/mesa/mesa -b mesa-23.1.5
 cp -rvf ./debian ./mesa/
 cd ./mesa
+sed -i ' 1 s/.*/& - PikaOS YellowBirb Mesa /' ./VERSION
 
 # Get build deps
 apt-get build-dep ./ -y
 
 # Build package
-
-LOGNAME=root dh_make --createorig -y -l -p mesa_23.1.5
 
 dpkg-buildpackage --no-sign
 
