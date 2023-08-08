@@ -1,0 +1,46 @@
+From 7ddac41f3f5919be748143d8a570cc3b1f4ed27c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>
+Date: Tue, 11 Apr 2023 02:31:28 +0200
+Subject: radv: Chain command buffers on GFX6 in radv_queue.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Also don't check whether chaining is enabled in radv_queue, the
+winsys will take care of that anyway.
+
+Signed-off-by: Timur Kristóf <timur.kristof@gmail.com>
+Reviewed-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/22406>
+---
+ src/amd/vulkan/radv_queue.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/src/amd/vulkan/radv_queue.c b/src/amd/vulkan/radv_queue.c
+index 0823e545a19..e00d448ed18 100644
+--- a/src/amd/vulkan/radv_queue.c
++++ b/src/amd/vulkan/radv_queue.c
+@@ -1693,9 +1693,6 @@ radv_queue_submit_normal(struct radv_queue *queue, struct vk_queue_submit *submi
+       .uses_shadow_regs = queue->state.uses_shadow_regs,
+    };
+ 
+-   const bool chaining_en = !(queue->device->instance->debug_flags & RADV_DEBUG_NO_IBS) &&
+-                            queue->device->physical_device->rad_info.gfx_level >= GFX7;
+-
+    for (uint32_t j = 0, advance; j < cmd_buffer_count; j += advance) {
+       advance = MIN2(max_cs_submission, cmd_buffer_count - j);
+       const bool last_submit = j + advance == cmd_buffer_count;
+@@ -1714,8 +1711,8 @@ radv_queue_submit_normal(struct radv_queue *queue, struct vk_queue_submit *submi
+          struct radv_cmd_buffer *cmd_buffer =
+             (struct radv_cmd_buffer *)submission->command_buffers[j + c];
+          assert(cmd_buffer->vk.level == VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+-         const bool can_chain_next = chaining_en && !(cmd_buffer->usage_flags &
+-                                                      VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
++         const bool can_chain_next =
++            !(cmd_buffer->usage_flags & VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT);
+ 
+          /* ACE needs to be first because the last CS must match the queue's IP type. */
+          if (radv_cmd_buffer_needs_ace(cmd_buffer)) {
+-- 
+cgit v1.2.1
+

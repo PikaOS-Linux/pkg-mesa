@@ -1,0 +1,153 @@
+From 948a122f300b3df036fea1a8e14301295062e360 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>
+Date: Thu, 13 Apr 2023 17:23:40 +0200
+Subject: amd: Rename INDIRECT_BUFFER_CIK to just INDIRECT_BUFFER.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This packet is supported on GFX6 too, its name should relect that.
+
+Signed-off-by: Timur Kristóf <timur.kristof@gmail.com>
+Reviewed-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/22406>
+---
+ src/amd/common/ac_debug.c                     | 2 +-
+ src/amd/common/sid.h                          | 2 +-
+ src/amd/vulkan/radv_cmd_buffer.c              | 6 +++---
+ src/amd/vulkan/radv_cp_reg_shadowing.c        | 2 +-
+ src/amd/vulkan/radv_queue.c                   | 2 +-
+ src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c | 6 +++---
+ src/gallium/winsys/amdgpu/drm/amdgpu_cs.c     | 2 +-
+ 7 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/src/amd/common/ac_debug.c b/src/amd/common/ac_debug.c
+index 9c0d9436f48..3503ff23f5c 100644
+--- a/src/amd/common/ac_debug.c
++++ b/src/amd/common/ac_debug.c
+@@ -449,7 +449,7 @@ static void ac_parse_packet3(FILE *f, uint32_t header, struct ac_ib_parser *ib,
+       break;
+    case PKT3_INDIRECT_BUFFER_SI:
+    case PKT3_INDIRECT_BUFFER_CONST:
+-   case PKT3_INDIRECT_BUFFER_CIK: {
++   case PKT3_INDIRECT_BUFFER: {
+       uint32_t base_lo_dw = ac_ib_get(ib);
+       ac_dump_reg(f, ib->gfx_level, ib->family, R_3F0_IB_BASE_LO, base_lo_dw, ~0);
+       uint32_t base_hi_dw = ac_ib_get(ib);
+diff --git a/src/amd/common/sid.h b/src/amd/common/sid.h
+index 5bc60316c82..0c860c1acbd 100644
+--- a/src/amd/common/sid.h
++++ b/src/amd/common/sid.h
+@@ -132,7 +132,7 @@
+ #define   WAIT_REG_MEM_MEM_SPACE(x)                   (((unsigned)(x)&0x3) << 4)
+ #define   WAIT_REG_MEM_PFP                            (1 << 8)
+ #define PKT3_MEM_WRITE                             0x3D /* GFX6 only */
+-#define PKT3_INDIRECT_BUFFER_CIK                   0x3F /* GFX7+ */
++#define PKT3_INDIRECT_BUFFER                       0x3F /* GFX6+ */
+ #define PKT3_COPY_DATA                             0x40
+ #define   COPY_DATA_SRC_SEL(x)                        ((x)&0xf)
+ #define   COPY_DATA_REG                               0
+diff --git a/src/amd/vulkan/radv_cmd_buffer.c b/src/amd/vulkan/radv_cmd_buffer.c
+index cb031b95173..343cd6ca9f8 100644
+--- a/src/amd/vulkan/radv_cmd_buffer.c
++++ b/src/amd/vulkan/radv_cmd_buffer.c
+@@ -9509,7 +9509,7 @@ radv_CmdExecuteGeneratedCommandsNV(VkCommandBuffer commandBuffer, VkBool32 isPre
+       return;
+ 
+    /* Secondary command buffers are needed for the full extension but can't use
+-    * PKT3_INDIRECT_BUFFER_CIK.
++    * PKT3_INDIRECT_BUFFER.
+     */
+    assert(cmd_buffer->vk.level == VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+ 
+@@ -9539,7 +9539,7 @@ radv_CmdExecuteGeneratedCommandsNV(VkCommandBuffer commandBuffer, VkBool32 isPre
+    radeon_emit(cmd_buffer->cs, 0);
+ 
+    if (!view_mask) {
+-      radeon_emit(cmd_buffer->cs, PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0));
++      radeon_emit(cmd_buffer->cs, PKT3(PKT3_INDIRECT_BUFFER, 2, 0));
+       radeon_emit(cmd_buffer->cs, va);
+       radeon_emit(cmd_buffer->cs, va >> 32);
+       radeon_emit(cmd_buffer->cs, cmdbuf_size >> 2);
+@@ -9547,7 +9547,7 @@ radv_CmdExecuteGeneratedCommandsNV(VkCommandBuffer commandBuffer, VkBool32 isPre
+       u_foreach_bit (view, view_mask) {
+          radv_emit_view_index(cmd_buffer, view);
+ 
+-         radeon_emit(cmd_buffer->cs, PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0));
++         radeon_emit(cmd_buffer->cs, PKT3(PKT3_INDIRECT_BUFFER, 2, 0));
+          radeon_emit(cmd_buffer->cs, va);
+          radeon_emit(cmd_buffer->cs, va >> 32);
+          radeon_emit(cmd_buffer->cs, cmdbuf_size >> 2);
+diff --git a/src/amd/vulkan/radv_cp_reg_shadowing.c b/src/amd/vulkan/radv_cp_reg_shadowing.c
+index 3f46b7c1619..dac9411c03b 100644
+--- a/src/amd/vulkan/radv_cp_reg_shadowing.c
++++ b/src/amd/vulkan/radv_cp_reg_shadowing.c
+@@ -112,7 +112,7 @@ radv_emit_shadow_regs_preamble(struct radeon_cmdbuf *cs, const struct radv_devic
+                                struct radv_queue_state *queue_state)
+ {
+    uint64_t va = radv_buffer_get_va(queue_state->shadow_regs_ib);
+-   radeon_emit(cs, PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0));
++   radeon_emit(cs, PKT3(PKT3_INDIRECT_BUFFER, 2, 0));
+    radeon_emit(cs, va);
+    radeon_emit(cs, va >> 32);
+    radeon_emit(cs, queue_state->shadow_regs_ib_size_dw & 0xffff);
+diff --git a/src/amd/vulkan/radv_queue.c b/src/amd/vulkan/radv_queue.c
+index e00d448ed18..b28797547be 100644
+--- a/src/amd/vulkan/radv_queue.c
++++ b/src/amd/vulkan/radv_queue.c
+@@ -828,7 +828,7 @@ radv_init_graphics_state(struct radeon_cmdbuf *cs, struct radv_device *device)
+    if (device->gfx_init) {
+       uint64_t va = radv_buffer_get_va(device->gfx_init);
+ 
+-      radeon_emit(cs, PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0));
++      radeon_emit(cs, PKT3(PKT3_INDIRECT_BUFFER, 2, 0));
+       radeon_emit(cs, va);
+       radeon_emit(cs, va >> 32);
+       radeon_emit(cs, device->gfx_init_size_dw & 0xffff);
+diff --git a/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c b/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
+index 1b8f9b86c34..1caa359ebe6 100644
+--- a/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
++++ b/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
+@@ -372,7 +372,7 @@ radv_amdgpu_cs_grow(struct radeon_cmdbuf *_cs, size_t min_size)
+    cs->ws->base.cs_add_buffer(&cs->base, cs->ib_buffer);
+ 
+    if (cs->use_ib) {
+-      radeon_emit(&cs->base, PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0));
++      radeon_emit(&cs->base, PKT3(PKT3_INDIRECT_BUFFER, 2, 0));
+       radeon_emit(&cs->base, radv_amdgpu_winsys_bo(cs->ib_buffer)->base.va);
+       radeon_emit(&cs->base, radv_amdgpu_winsys_bo(cs->ib_buffer)->base.va >> 32);
+       radeon_emit(&cs->base, S_3F2_CHAIN(1) | S_3F2_VALID(1));
+@@ -513,7 +513,7 @@ radv_amdgpu_cs_chain(struct radeon_cmdbuf *cs, struct radeon_cmdbuf *next_cs, bo
+ 
+    acs->chained_to = next_acs;
+ 
+-   cs->buf[cs->cdw - 4] = PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0);
++   cs->buf[cs->cdw - 4] = PKT3(PKT3_INDIRECT_BUFFER, 2, 0);
+    cs->buf[cs->cdw - 3] = next_acs->ib.ib_mc_address;
+    cs->buf[cs->cdw - 2] = next_acs->ib.ib_mc_address >> 32;
+    cs->buf[cs->cdw - 1] =
+@@ -667,7 +667,7 @@ radv_amdgpu_cs_execute_secondary(struct radeon_cmdbuf *_parent, struct radeon_cm
+          radv_amdgpu_cs_grow(&parent->base, 4);
+ 
+       /* Not setting the CHAIN bit will launch an IB2. */
+-      radeon_emit(&parent->base, PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0));
++      radeon_emit(&parent->base, PKT3(PKT3_INDIRECT_BUFFER, 2, 0));
+       radeon_emit(&parent->base, child->ib.ib_mc_address);
+       radeon_emit(&parent->base, child->ib.ib_mc_address >> 32);
+       radeon_emit(&parent->base, child->ib.size);
+diff --git a/src/gallium/winsys/amdgpu/drm/amdgpu_cs.c b/src/gallium/winsys/amdgpu/drm/amdgpu_cs.c
+index 8ecd79df109..8916002cad4 100644
+--- a/src/gallium/winsys/amdgpu/drm/amdgpu_cs.c
++++ b/src/gallium/winsys/amdgpu/drm/amdgpu_cs.c
+@@ -1148,7 +1148,7 @@ static bool amdgpu_cs_check_space(struct radeon_cmdbuf *rcs, unsigned dw)
+    while ((rcs->current.cdw & ib_pad_dw_mask) != ib_pad_dw_mask - 3)
+       radeon_emit(rcs, PKT3_NOP_PAD);
+ 
+-   radeon_emit(rcs, PKT3(PKT3_INDIRECT_BUFFER_CIK, 2, 0));
++   radeon_emit(rcs, PKT3(PKT3_INDIRECT_BUFFER, 2, 0));
+    radeon_emit(rcs, va);
+    radeon_emit(rcs, va >> 32);
+    uint32_t *new_ptr_ib_size = &rcs->current.buf[rcs->current.cdw++];
+-- 
+cgit v1.2.1
+
