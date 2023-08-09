@@ -1,5 +1,4 @@
 # Sign the packages
-rm -rf ./output/mesa-vulkan*.deb
 dpkg-sig --sign builder ./output/*.deb
 
 # Pull down existing ppa repo db files etc
