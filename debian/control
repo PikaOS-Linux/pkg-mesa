@@ -66,7 +66,7 @@ Homepage: https://mesa3d.org/
 Package: libxatracker2
 Section: libs
 Architecture: amd64 i386 x32
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
@@ -77,10 +77,52 @@ Description: X acceleration library -- runtime
  .
  XA is intended to be used by the vmware driver for virtualized X acceleration.
 
+
+Package: mesa-stable
+Section: libs
+Architecture: any
+Depends: libmesa-stable,
+ ${shlibs:Depends},
+ ${misc:Depends},
+ libd3dadapter9-mesa (= ${binary:Version}),
+ libegl-mesa0 (= ${binary:Version}),
+ libegl1-mesa-dev (= ${binary:Version}),
+ libegl1-mesa (= ${binary:Version}),
+ libgbm-dev (= ${binary:Version}),
+ libgbm1 (= ${binary:Version}),
+ libgl1-mesa-dri (= ${binary:Version}),
+ libgl1-mesa-glx (= ${binary:Version}),
+ libglapi-mesa (= ${binary:Version}),
+ libgles2-mesa (= ${binary:Version}),
+ libglx-mesa0 (= ${binary:Version}),
+ libosmesa6 (= ${binary:Version}),
+ libxatracker2 (= ${binary:Version}),
+ mesa-common-dev (= ${binary:Version}),
+ mesa-va-drivers (= ${binary:Version}),
+ mesa-vdpau-drivers (= ${binary:Version}),
+ mesa-vulkan-drivers (= ${binary:Version}),
+Pre-Depends: ${misc:Pre-Depends}
+Conflicts: mesa-pika, mesa-git
+Replaces: mesa-pika, mesa-git
+Multi-Arch: same
+Description: a meta package to install the latest stable version of mesa.
+
+Package: libmesa-stable
+Section: libs
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Pre-Depends: ${misc:Pre-Depends}
+Conflicts: libmesa-pika, libmesa-git
+Replaces: libmesa-pika, libmesa-git
+Multi-Arch: same
+Description: mesa stable core.
+
 Package: libxatracker-dev
 Section: libdevel
 Architecture: amd64 i386 x32
-Depends:
+Depends: libmesa-stable,
  libxatracker2 (= ${binary:Version}),
  ${misc:Depends},
 Multi-Arch: same
@@ -96,7 +138,7 @@ Description: X acceleration library -- development files
 Package: libd3dadapter9-mesa
 Section: libs
 Architecture: amd64 arm64 armel armhf i386 powerpc
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
  libudev1 [linux-any],
@@ -110,7 +152,7 @@ Description: state-tracker for Direct3D9
 Package: libd3dadapter9-mesa-dev
 Section: libdevel
 Architecture: amd64 arm64 armel armhf i386 powerpc
-Depends:
+Depends: libmesa-stable,
  libd3dadapter9-mesa (= ${binary:Version}),
  libudev1 [linux-any],
  ${misc:Depends},
@@ -126,7 +168,7 @@ Description: state-tracker for Direct3D9 -- development files
 Package: libgbm1
 Section: libs
 Architecture: linux-any kfreebsd-any
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
@@ -140,7 +182,7 @@ Description: generic buffer management API -- runtime
 Package: libgbm-dev
 Section: libdevel
 Architecture: linux-any kfreebsd-any
-Depends:
+Depends: libmesa-stable,
  libgbm1 (= ${binary:Version}),
  ${misc:Depends},
 Multi-Arch: same
@@ -156,7 +198,7 @@ Description: generic buffer management API -- development files
 Package: libegl-mesa0
 Section: libs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
  libgbm1 (= ${binary:Version}) [!hurd-any],
@@ -173,7 +215,7 @@ Description: free implementation of the EGL API -- Mesa vendor library
 Package: libegl1-mesa
 Section: oldlibs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libegl1,
  ${misc:Depends},
 Multi-Arch: same
@@ -183,7 +225,7 @@ Description: transitional dummy package
 Package: libegl1-mesa-dev
 Section: libdevel
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libegl-dev,
  libglvnd-dev,
  ${misc:Depends},
@@ -200,7 +242,7 @@ Description: free implementation of the EGL API -- development files
 Package: libwayland-egl1-mesa
 Section: oldlibs
 Architecture: linux-any
-Depends:
+Depends: libmesa-stable,
  ${misc:Depends},
  libegl1,
  libwayland-egl1,
@@ -212,7 +254,7 @@ Description: transitional dummy package
 Package: libgles2-mesa
 Section: oldlibs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libgles2,
  ${misc:Depends},
 Multi-Arch: same
@@ -222,7 +264,7 @@ Description: transitional dummy package
 Package: libgles2-mesa-dev
 Section: oldlibs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libgles-dev,
  libglvnd-dev,
  ${misc:Depends},
@@ -233,7 +275,7 @@ Description: transitional dummy package
 Package: libglapi-mesa
 Section: libs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
@@ -246,7 +288,7 @@ Description: free implementation of the GL API -- shared library
 Package: libglx-mesa0
 Section: libs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
  libgl1-mesa-dri,
@@ -274,7 +316,7 @@ Description: free implementation of the OpenGL API -- GLX vendor library
 Package: libgl1-mesa-glx
 Section: oldlibs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libgl1,
  libglx-mesa0,
  ${misc:Depends},
@@ -286,7 +328,7 @@ Package: libgl1-mesa-dri
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends}
 Recommends:
@@ -310,7 +352,7 @@ Description: free implementation of the OpenGL API -- DRI modules
 Package: libgl1-mesa-dev
 Section: oldlibs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libgl-dev,
  libglvnd-dev,
  ${misc:Depends},
@@ -321,7 +363,7 @@ Description: transitional dummy package
 Package: mesa-common-dev
 Section: libdevel
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libgl-dev,
  libglx-dev,
  libx11-dev,
@@ -338,7 +380,7 @@ Description: Developer documentation for Mesa
 Package: libosmesa6
 Section: libs
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
@@ -354,7 +396,7 @@ Description: Mesa Off-screen rendering extension
 Package: libosmesa6-dev
 Section: libdevel
 Architecture: any
-Depends:
+Depends: libmesa-stable,
  libosmesa6 (= ${binary:Version}),
  mesa-common-dev (= ${binary:Version}) | libgl-dev,
  ${misc:Depends},
@@ -372,7 +414,7 @@ Package: mesa-va-drivers
 Section: libs
 Architecture: linux-any kfreebsd-any
 Build-Profiles: <!pkg.mesa.nolibva>
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Enhances:
@@ -393,7 +435,7 @@ Description: Mesa VA-API video acceleration drivers
 Package: mesa-vdpau-drivers
 Section: libs
 Architecture: linux-any kfreebsd-any
-Depends:
+Depends: libmesa-stable,
  libvdpau1,
  ${shlibs:Depends},
  ${misc:Depends},
@@ -414,7 +456,7 @@ Package: mesa-vulkan-drivers
 Section: libs
 Architecture: amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc64 x32
 Pre-Depends: ${misc:Pre-Depends}
-Depends:
+Depends: libmesa-stable,
  libvulkan1,
  python3:any | python3-minimal:any,
  ${shlibs:Depends},
@@ -429,7 +471,7 @@ Package: mesa-opencl-icd
 Section: libs
 Architecture: amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc64 x32
 Pre-Depends: ${misc:Pre-Depends}
-Depends:
+Depends: libmesa-stable,
  libclc-15,
  ocl-icd-libopencl1 | libopencl1,
  ${shlibs:Depends},
@@ -446,7 +488,7 @@ Package: mesa-drm-shim
 Section: libs
 Architecture: amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el s390x sparc64
 Pre-Depends: ${misc:Pre-Depends}
-Depends:
+Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Multi-Arch: same
