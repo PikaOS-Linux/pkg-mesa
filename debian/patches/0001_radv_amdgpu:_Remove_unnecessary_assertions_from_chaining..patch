@@ -1,0 +1,42 @@
+From add3b34c171821804049084cf9d252a72cc54e2b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>
+Date: Tue, 11 Apr 2023 13:59:49 +0200
+Subject: radv/amdgpu: Remove unnecessary assertions from chaining.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+These used to guard against chaining on GFX6 and on HW IP types
+that don't support chaining, but these things are now guarded
+elsewhere and these assertions are no longer necessary.
+
+Signed-off-by: Timur Kristóf <timur.kristof@gmail.com>
+Reviewed-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/22406>
+---
+ src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c b/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
+index 7107fc0b896..1b8f9b86c34 100644
+--- a/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
++++ b/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
+@@ -482,7 +482,6 @@ radv_amdgpu_cs_unchain(struct radeon_cmdbuf *cs)
+       return;
+ 
+    assert(cs->cdw <= cs->max_dw + 4);
+-   assert(get_nop_packet(acs) == PKT3_NOP_PAD); /* Other shouldn't chain. */
+ 
+    acs->chained_to = NULL;
+    cs->buf[cs->cdw - 4] = PKT3_NOP_PAD;
+@@ -511,7 +510,6 @@ radv_amdgpu_cs_chain(struct radeon_cmdbuf *cs, struct radeon_cmdbuf *next_cs, bo
+       return false;
+ 
+    assert(cs->cdw <= cs->max_dw + 4);
+-   assert(get_nop_packet(acs) == PKT3_NOP_PAD); /* Other shouldn't chain. */
+ 
+    acs->chained_to = next_acs;
+ 
+-- 
+cgit v1.2.1
+

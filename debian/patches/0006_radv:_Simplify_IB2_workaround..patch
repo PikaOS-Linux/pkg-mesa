@@ -1,0 +1,69 @@
+From d16d9ef34550da313bbb45e5782136d6bb3b5964 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>
+Date: Mon, 17 Apr 2023 16:13:16 +0200
+Subject: radv: Simplify IB2 workaround.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Move compute IB2 check to the winsys, because IB2 only works on
+GFX queues and not any other queue types.
+
+Then, simplify the workaround condition in the cmd buffer.
+
+Signed-off-by: Timur Kristóf <timur.kristof@gmail.com>
+Reviewed-by: Tatsuyuki Ishi <ishitatsuyuki@gmail.com>
+Reviewed-by: Samuel Pitoiset <samuel.pitoiset@gmail.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/22533>
+---
+ src/amd/vulkan/radv_cmd_buffer.c              | 19 ++++++-------------
+ src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c |  2 +-
+ 2 files changed, 7 insertions(+), 14 deletions(-)
+
+diff --git a/src/amd/vulkan/radv_cmd_buffer.c b/src/amd/vulkan/radv_cmd_buffer.c
+index 5cc066e7e65..6de52df3ef7 100644
+--- a/src/amd/vulkan/radv_cmd_buffer.c
++++ b/src/amd/vulkan/radv_cmd_buffer.c
+@@ -7503,20 +7503,13 @@ radv_CmdExecuteCommands(VkCommandBuffer commandBuffer, uint32_t commandBufferCou
+ 
+    for (uint32_t i = 0; i < commandBufferCount; i++) {
+       RADV_FROM_HANDLE(radv_cmd_buffer, secondary, pCmdBuffers[i]);
+-      bool allow_ib2 = true;
+ 
+-      if (secondary->device->physical_device->rad_info.gfx_level <= GFX7 &&
+-          secondary->state.uses_draw_indirect_multi) {
+-         /* Do not launch an IB2 for secondary command buffers that contain
+-          * DRAW_{INDEX}_INDIRECT_MULTI on GFX7 because it's illegal and hang the GPU.
+-          */
+-         allow_ib2 = false;
+-      }
+-
+-      if (secondary->qf == RADV_QUEUE_COMPUTE) {
+-         /* IB2 packets are not supported on compute queues according to PAL. */
+-         allow_ib2 = false;
+-      }
++      /* Do not launch an IB2 for secondary command buffers that contain
++       * DRAW_{INDEX}_INDIRECT_MULTI on GFX7 because it's illegal and hang the GPU.
++       */
++      const bool allow_ib2 =
++         !secondary->state.uses_draw_indirect_multi ||
++         secondary->device->physical_device->rad_info.gfx_level >= GFX8;
+ 
+       primary->scratch_size_per_wave_needed =
+          MAX2(primary->scratch_size_per_wave_needed, secondary->scratch_size_per_wave_needed);
+diff --git a/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c b/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
+index 1b007557571..ee2108bc4a4 100644
+--- a/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
++++ b/src/amd/vulkan/winsys/amdgpu/radv_amdgpu_cs.c
+@@ -648,7 +648,7 @@ radv_amdgpu_cs_execute_secondary(struct radeon_cmdbuf *_parent, struct radeon_cm
+    struct radv_amdgpu_cs *parent = radv_amdgpu_cs(_parent);
+    struct radv_amdgpu_cs *child = radv_amdgpu_cs(_child);
+    struct radv_amdgpu_winsys *ws = parent->ws;
+-   bool use_ib2 = parent->use_ib && allow_ib2;
++   const bool use_ib2 = parent->use_ib && allow_ib2 && parent->hw_ip == AMD_IP_GFX;
+ 
+    if (parent->status != VK_SUCCESS || child->status != VK_SUCCESS)
+       return;
+-- 
+cgit v1.2.1
+

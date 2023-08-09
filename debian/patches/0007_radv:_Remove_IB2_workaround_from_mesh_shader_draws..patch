@@ -1,0 +1,34 @@
+From 46a14390d8bcb7e91620f94f9d7bde2dc449190d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Timur=20Krist=C3=B3f?= <timur.kristof@gmail.com>
+Date: Tue, 18 Apr 2023 12:56:04 +0200
+Subject: radv: Remove IB2 workaround from mesh shader draws.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The GPUs which need the workaround do not support mesh shaders.
+
+Signed-off-by: Timur Kristóf <timur.kristof@gmail.com>
+Reviewed-by: Tatsuyuki Ishi <ishitatsuyuki@gmail.com>
+Reviewed-by: Samuel Pitoiset <samuel.pitoiset@gmail.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/22533>
+---
+ src/amd/vulkan/radv_cmd_buffer.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/amd/vulkan/radv_cmd_buffer.c b/src/amd/vulkan/radv_cmd_buffer.c
+index 6de52df3ef7..e85e1fd9544 100644
+--- a/src/amd/vulkan/radv_cmd_buffer.c
++++ b/src/amd/vulkan/radv_cmd_buffer.c
+@@ -8115,8 +8115,6 @@ radv_cs_emit_indirect_mesh_draw_packet(struct radv_cmd_buffer *cmd_buffer, uint3
+    radeon_emit(cs, count_va >> 32);
+    radeon_emit(cs, stride);
+    radeon_emit(cs, V_0287F0_DI_SRC_SEL_AUTO_INDEX);
+-
+-   cmd_buffer->state.uses_draw_indirect_multi = true;
+ }
+ 
+ ALWAYS_INLINE static void
+-- 
+cgit v1.2.1
+
