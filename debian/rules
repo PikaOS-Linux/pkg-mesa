@@ -17,6 +17,8 @@ LLVM_VERSION = 15
 export PATH:=/usr/lib/llvm-$(LLVM_VERSION)/bin/:$(PATH)
 
 export DEB_BUILD_MAINT_OPTIONS=optimize=-lto
+# enable LTO everywhere:
+#confflags += -Db_lto=true
 
 ifeq (,$(filter $(DEB_HOST_ARCH), armhf ppc64el sh3 sh4))
 buildflags = \
@@ -50,6 +52,9 @@ confflags_SSE2 = -Dsse2=true
 
 LLVM_ARCHS     = amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc64 x32
 RUSTICL_ARCHS  = amd64 arm64 armel armhf mips64el mipsel ppc64el s390x
+#ifeq ($(DEB_DISTRIBUTION), jammy)
+#       RUSTICL_ARCHS  = arm64
+#else
 VALGRIND_ARCHS = amd64 arm64 armhf i386 mips64el mipsel powerpc ppc64 ppc64el s390x
 WINE_ARCHS     = amd64 arm64 armel armhf i386 powerpc
 
@@ -69,7 +74,7 @@ else
   # radv/lavapipe needs LLVM and the Vulkan loader, so only build on the subset of
   # arches where we have LLVM enabled and where the Vulkan loader is built.
   ifneq (,$(filter $(DEB_HOST_ARCH), amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el s390x sparc64))
-	VULKAN_DRIVERS += amd swrast
+	VULKAN_DRIVERS += amd swrast virtio
   endif
 
   # Only enable amd on riscv64, swrast needs CPU JIT support which doesn't work properly yet
@@ -118,11 +123,9 @@ else
 	endif
 
 	# WSL supports only amd64 and arm64
-	DOZEN_INSTALLED=no
 	ifneq (,$(filter amd64 arm64,$(DEB_HOST_ARCH)))
 		GALLIUM_DRIVERS += d3d12
-		VULKAN_DRIVERS += microsoft-experimental
-		DOZEN_INSTALLED=yes
+#		VULKAN_DRIVERS += microsoft-experimental
 	endif
   endif
 
@@ -207,6 +210,7 @@ confflags += \
 	$(confflags_VALGRIND)
 
 override_dh_clean: regen_control
+	sed -i 's/-.*//' VERSION
 	rm -rf .pc
 	rm -rf build
 	rm -rf configure bin/config.guess bin/config.sub config.h.in
@@ -218,6 +222,7 @@ override_dh_clean: regen_control
 	dh_clean
 
 override_dh_auto_configure:
+	dpkg-parsechangelog | awk '/^Version:/ {print $$2}' > VERSION
 	$(buildflags) dh_auto_configure -- \
 		$(confflags)
 
@@ -243,6 +248,7 @@ override_dh_installchangelogs:
 override_dh_install:
 	# purge .la files
 	find debian/tmp/ -name '*.la' -exec rm '{}' ';'
+	find debian/tmp/usr/bin -name 'mme_*_sim_hw_test' -exec rm '{}' ';'
 
 	# Get rid of some files which aren't installed. Do not
 	# use -f to ensure we notice disappearing files:
@@ -280,11 +286,6 @@ override_dh_install:
 	   debian/mesa-opencl-icd/usr/lib/${DEB_HOST_MULTIARCH}/
   endif
 
-	# Conditionally enable install of dozen files
-	if test "$(DOZEN_INSTALLED)" = "yes"; then \
-		sed -i -e "s|#dozen\ ||g" debian/mesa-vulkan-drivers.install; \
-	fi
-
 	dh_install -a
 
 	# Install bug control and script:
@@ -298,7 +299,7 @@ override_dh_missing:
 	dh_missing --fail-missing
 
 override_dh_makeshlibs:
-	dh_makeshlibs -a -- -c4
+	dh_makeshlibs -a -- -c0
 
 %:
 	dh $@ --with quilt \
