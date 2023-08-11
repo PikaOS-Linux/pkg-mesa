@@ -104,8 +104,8 @@ Depends: libmesa-stable,
  mesa-vdpau-drivers (= ${binary:Version}),
  mesa-vulkan-drivers (= ${binary:Version}),
 Pre-Depends: ${misc:Pre-Depends}
-Conflicts: mesa-pika, mesa-git
-Replaces: mesa-pika, mesa-git
+Conflicts: mesa-hybrid, mesa-git, mesa-custom
+Replaces: mesa-hybrid, mesa-git, mesa-custom
 Multi-Arch: same
 Description: a meta package to install the latest stable version of mesa.
 
@@ -116,8 +116,8 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
-Conflicts: libmesa-pika, libmesa-git
-Replaces: libmesa-pika, libmesa-git
+Conflicts: libmesa-hybrid, libmesa-git, libmesa-custom
+Replaces: libmesa-hybrid, libmesa-git, libmesa-custom
 Multi-Arch: same
 Description: mesa stable core.
 
