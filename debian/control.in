@@ -112,6 +112,8 @@ Depends: libmesa-stable,
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
+Conflicts: libxatracker2-git
+Replaces: libxatracker2-git
 Description: X acceleration library -- runtime
  This package contains the XA (X acceleration) library.  It is used exclusively
  by the X server to do render, copy and video acceleration.
@@ -125,6 +127,8 @@ Depends: libmesa-stable,
  libxatracker2 (= ${binary:Version}),
  ${misc:Depends},
 Multi-Arch: same
+Conflicts: libxatracker-git-dev
+Replaces: libxatracker-git-dev
 Description: X acceleration library -- development files
  This package contains the XA (X acceleration) library.  It is used exclusively
  by the X server to do render, copy and video acceleration.
@@ -142,6 +146,8 @@ Depends: libmesa-stable,
  ${misc:Depends},
  libudev1 [linux-any],
 Pre-Depends: ${misc:Pre-Depends}
+Conflicts: libd3dadapter9-mesa-git
+Replaces: libd3dadapter9-mesa-git
 Multi-Arch: same
 Description: state-tracker for Direct3D9
  This package contains a Gallium3D state tracker that implements the Direct3D9
@@ -157,6 +163,8 @@ Depends: libmesa-stable,
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
+Conflicts: libd3dadapter9-mesa-git-dev
+Replaces: libd3dadapter9-mesa-git-dev
 Description: state-tracker for Direct3D9 -- development files
  This package contains a Gallium3D state tracker that implements the Direct3D9
  API.  Combined with the gallium-nine branch of Wine, programs using D3D9 can
@@ -172,6 +180,8 @@ Depends: libmesa-stable,
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
+Conflicts: libgbm1-git
+Replaces: libgbm1-git
 Description: generic buffer management API -- runtime
  This package contains the GBM buffer management library.  It provides a
  mechanism for allocating buffers for graphics rendering tied to Mesa.
@@ -185,6 +195,8 @@ Depends: libmesa-stable,
  libgbm1 (= ${binary:Version}),
  ${misc:Depends},
 Multi-Arch: same
+Conflicts: libgbm-dev-git
+Replaces: libgbm-dev-git
 Description: generic buffer management API -- development files
  This package contains the GBM buffer management library.  It provides a
  mechanism for allocating buffers for graphics rendering tied to Mesa.
@@ -202,6 +214,8 @@ Depends: libmesa-stable,
  ${misc:Depends},
  libgbm1 (= ${binary:Version}) [!hurd-any],
 Provides: libegl-vendor
+Conflicts: libegl-mesa0-git
+Replaces: libegl-mesa0-git
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
 Description: free implementation of the EGL API -- Mesa vendor library
@@ -217,6 +231,8 @@ Architecture: any
 Depends: libmesa-stable,
  libegl1,
  ${misc:Depends},
+Conflicts: libegl1-mesa-git
+Replaces: libegl1-mesa-git
 Multi-Arch: same
 Description: transitional dummy package
  This is a transitional dummy package, it can be safely removed.
@@ -229,6 +245,8 @@ Depends: libmesa-stable,
  libglvnd-dev,
  ${misc:Depends},
 Multi-Arch: same
+Conflicts: libegl1-mesa-git-dev
+Replaces: libegl1-mesa-git-dev
 Description: free implementation of the EGL API -- development files
  This package contains the development environment required for compiling
  programs against EGL native platform graphics interface library.
@@ -247,6 +265,8 @@ Depends: libmesa-stable,
  libwayland-egl1,
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
+Conflicts: libwayland-egl1-mesa-git
+Replaces: libwayland-egl1-mesa-git
 Description: transitional dummy package
  This is a transitional dummy package, it can be safely removed.
 
@@ -257,6 +277,8 @@ Depends: libmesa-stable,
  libgles2,
  ${misc:Depends},
 Multi-Arch: same
+Conflicts: libgles2-mesa-git
+Replaces: libgles2-mesa-git
 Description: transitional dummy package
  This is a transitional dummy package, it can be safely removed.
 
@@ -268,6 +290,8 @@ Depends: libmesa-stable,
  libglvnd-dev,
  ${misc:Depends},
 Multi-Arch: same
+Conflicts: libgles2-mesa-git-dev
+Replaces: libgles2-mesa-git-dev
 Description: transitional dummy package
  This is a transitional dummy package, it can be safely removed.
 
@@ -279,6 +303,8 @@ Depends: libmesa-stable,
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
+Conflicts: libglapi-mesa-git
+Replaces: libglapi-mesa-git
 Description: free implementation of the GL API -- shared library
  The Mesa GL API module is responsible for dispatching all the gl*
  functions. It is intended to be mainly used by both the libgles1-mesa
@@ -296,6 +322,8 @@ Breaks:
  libopengl-perl (<< 0.6704+dfsg-2),
  glx-diversions (<< 0.8.4~),
 Pre-Depends: ${misc:Pre-Depends}
+Conflicts: libglx-mesa0-git
+Replaces: libglx-mesa0-git
 Multi-Arch: same
 Description: free implementation of the OpenGL API -- GLX vendor library
  Mesa is a 3-D graphics library with an API which is very similar to
@@ -320,6 +348,8 @@ Depends: libmesa-stable,
  libglx-mesa0,
  ${misc:Depends},
 Multi-Arch: same
+Conflicts: libgl1-mesa-glx-git
+Replaces: libgl1-mesa-glx-git
 Description: transitional dummy package
  This is a transitional dummy package, it can be safely removed.
 
@@ -335,7 +365,8 @@ Recommends:
 Breaks:
  libgl1-amber-dri (<< 21.3.9)
 Replaces:
- libgl1-amber-dri (<< 21.3.9)
+ libgl1-amber-dri (<< 21.3.9), libgl1-mesa-dri-git
+Conflicts: libgl1-mesa-dri-git
 Multi-Arch: same
 Description: free implementation of the OpenGL API -- DRI modules
  This version of Mesa provides GLX and DRI capabilities: it is capable of
@@ -356,6 +387,8 @@ Depends: libmesa-stable,
  libglvnd-dev,
  ${misc:Depends},
 Multi-Arch: same
+Conflicts: libgl1-mesa-git-dev
+Replaces: libgl1-mesa-git-dev
 Description: transitional dummy package
  This is a transitional dummy package, it can be safely removed.
 
@@ -369,7 +402,8 @@ Depends: libmesa-stable,
  libdrm-dev (>= 2.4.95) [!hurd-any],
  ${misc:Depends},
 Breaks: libegl1-mesa-dev (<< 18.2.5-2)
-Replaces: libegl1-mesa-dev (<< 18.2.5-2)
+Replaces: libegl1-mesa-dev (<< 18.2.5-2), mesa-common-git-dev
+Conflicts: mesa-common-git-dev
 Multi-Arch: same
 Description: Developer documentation for Mesa
  This package includes the specifications for the Mesa-specific OpenGL
@@ -383,6 +417,8 @@ Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Pre-Depends: ${misc:Pre-Depends}
+Conflicts: libosmesa6-git
+Replaces: libosmesa6-git
 Multi-Arch: same
 Description: Mesa Off-screen rendering extension
  OSmesa is a Mesa extension that allows programs to render to an
@@ -399,8 +435,8 @@ Depends: libmesa-stable,
  libosmesa6 (= ${binary:Version}),
  mesa-common-dev (= ${binary:Version}) | libgl-dev,
  ${misc:Depends},
-Conflicts: libosmesa-dev
-Replaces: libosmesa-dev
+Conflicts: libosmesa-dev, libosmesa6-git-dev, libosmesa-git-dev
+Replaces: libosmesa-dev, libosmesa6-git-dev,  libosmesa-git-dev
 Provides: libosmesa-dev
 Multi-Arch: same
 Description: Mesa Off-screen rendering extension -- development files
@@ -421,7 +457,8 @@ Enhances:
 Provides:
  va-driver,
 Breaks: vdpau-va-driver (<< 0.7.4-5)
-Replaces: vdpau-va-driver (<< 0.7.4-5)
+Replaces: vdpau-va-driver (<< 0.7.4-5), mesa-va-drivers-git
+Conflicts: mesa-va-drivers-git
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Description: Mesa VA-API video acceleration drivers
@@ -442,6 +479,8 @@ Enhances:
  libvdpau1,
 Provides:
  vdpau-driver,
+Replaces: mesa-vdpau-drivers-git
+Conflicts: mesa-vdpau-drivers-git
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Description: Mesa VDPAU video acceleration drivers
@@ -461,6 +500,8 @@ Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends}
 Provides: vulkan-icd
+Conflicts: mesa-vulkan-drivers-git
+Replaces: mesa-vulkan-drivers-git
 Multi-Arch: same
 Description: Mesa Vulkan graphics drivers
  Vulkan is a low-overhead 3D graphics and compute API. This package
@@ -476,6 +517,8 @@ Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
 Provides: opencl-icd
+Conflicts: mesa-opencl-icd-git
+Replaces: mesa-opencl-icd-git
 Multi-Arch: same
 Description: free implementation of the OpenCL API -- ICD runtime
  This package contains the mesa implementation of the OpenCL (Open Compute
@@ -490,6 +533,8 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
+Conflicts: mesa-drm-shim-git
+Replaces: mesa-drm-shim-git
 Multi-Arch: same
 Description: DRM shim libraries
  This package provides drm-shim libraries which can be used for testing DRM drivers when
