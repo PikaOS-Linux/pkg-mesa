@@ -86,6 +86,8 @@ Architecture: any
 Depends: libmesa-stable,
  ${shlibs:Depends},
  ${misc:Depends},
+ mesa-stable:i386 (= ${binary:Version}) [amd64],
+ mesa-stable:amd64 (= ${binary:Version}) [i386],
  libd3dadapter9-mesa (= ${binary:Version}),
  libegl-mesa0 (= ${binary:Version}),
  libegl1-mesa-dev (= ${binary:Version}),
@@ -104,10 +106,39 @@ Depends: libmesa-stable,
  mesa-vdpau-drivers (= ${binary:Version}),
  mesa-vulkan-drivers (= ${binary:Version}),
 Pre-Depends: ${misc:Pre-Depends}
-Conflicts: mesa-hybrid, mesa-git, mesa-custom
-Replaces: mesa-hybrid, mesa-git, mesa-custom
+Conflicts: mesa-hybrid, mesa-git, mesa-custom, mesa-hybrid-no-march, mesa-stable-no-march, mesa-git-no-march, mesa-custom-no-march
+Replaces: mesa-hybrid, mesa-git, mesa-custom, mesa-hybrid-no-march, mesa-stable-no-march, mesa-git-no-march, mesa-custom-no-march
 Multi-Arch: same
 Description: a meta package to install the latest stable version of mesa.
+
+Package: mesa-stable-no-march
+Section: libs
+Architecture: any
+Depends: libmesa-stable,
+ ${shlibs:Depends},
+ ${misc:Depends},
+ libd3dadapter9-mesa (= ${binary:Version}),
+ libegl-mesa0 (= ${binary:Version}),
+ libegl1-mesa-dev (= ${binary:Version}),
+ libegl1-mesa (= ${binary:Version}),
+ libgbm-dev (= ${binary:Version}),
+ libgbm1 (= ${binary:Version}),
+ libgl1-mesa-dri (= ${binary:Version}),
+ libgl1-mesa-glx (= ${binary:Version}),
+ libglapi-mesa (= ${binary:Version}),
+ libgles2-mesa (= ${binary:Version}),
+ libglx-mesa0 (= ${binary:Version}),
+ libosmesa6 (= ${binary:Version}),
+ libxatracker2 (= ${binary:Version}),
+ mesa-common-dev (= ${binary:Version}),
+ mesa-va-drivers (= ${binary:Version}),
+ mesa-vdpau-drivers (= ${binary:Version}),
+ mesa-vulkan-drivers (= ${binary:Version}),
+Pre-Depends: ${misc:Pre-Depends}
+Conflicts: mesa-hybrid, mesa-git, mesa-custom, mesa-hybrid-no-march, mesa-stable, mesa-git-no-march, mesa-custom-no-march
+Replaces: mesa-hybrid, mesa-git, mesa-custom, mesa-hybrid-no-march, mesa-stable, mesa-git-no-march, mesa-custom-no-march
+Provides: mesa-stable
+Description: a meta package to install the latest stable version of mesa (no Multi-Arch Support).
 
 Package: libmesa-stable
 Section: libs
