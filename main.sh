@@ -5,6 +5,7 @@ set -e
 git clone https://gitlab.freedesktop.org/mesa/mesa -b mesa-23.2.1
 cp -rvf ./debian ./mesa/
 cd ./mesa
+for i in $(cat ../patches/series) ; do echo "Applying Patch: $i" && patch -Np1 -i ../patches/$i || bash -c "echo "Applying Patch $i Failed!" && exit 2"; done
 sed -i ' 1 s/.*/& - PikaOS YellowBirb Mesa Stable/' ./VERSION
 
 # Get build deps
