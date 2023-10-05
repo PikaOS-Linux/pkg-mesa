@@ -42,6 +42,7 @@ Build-Depends:
  python3-ply,
  python3-setuptools,
  flex,
+ spirv-tools,
  bison,
  libelf-dev [@LLVM_ARCHS@],
  libwayland-dev (>= 1.15.0) [linux-any],
