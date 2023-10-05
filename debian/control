@@ -57,9 +57,9 @@ Build-Depends:
  valgrind [amd64 arm64 armhf i386 mips64el mipsel powerpc ppc64 ppc64el s390x],
  rustc [amd64 arm64 armel armhf mips64el mipsel ppc64el s390x],
  bindgen [amd64 arm64 armel armhf mips64el mipsel ppc64el s390x],
- llvm-spirv-16 [amd64 arm64 armel armhf mips64el mipsel ppc64el s390x],
+ llvm-spirv-17 [amd64 arm64 armel armhf mips64el mipsel ppc64el s390x],
  libclc-17 [amd64 arm64 armel armhf mips64el mipsel ppc64el s390x],
- libllvmspirvlib-16-dev,
+ libllvmspirvlib-17-dev,
 Rules-Requires-Root: no
 Vcs-Git: https://salsa.debian.org/xorg-team/lib/mesa.git
 Vcs-Browser: https://salsa.debian.org/xorg-team/lib/mesa
