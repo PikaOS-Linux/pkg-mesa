@@ -22,6 +22,7 @@ Build-Depends:
  libva-dev (>= 1.6.0) [linux-any kfreebsd-any] <!pkg.mesa.nolibva>,
  libvdpau-dev (>= 1.1.1) [linux-any kfreebsd-any],
  libvulkan-dev [@LLVM_ARCHS@],
+ vulkan-headers [@LLVM_ARCHS@],
  x11proto-dev,
  linux-libc-dev (>= 2.6.31) [linux-any],
  libx11-xcb-dev,
