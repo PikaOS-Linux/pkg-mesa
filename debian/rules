@@ -110,9 +110,12 @@ else
 		confflags_GALLIUM += -Dgallium-xa=enabled
 		VULKAN_DRIVERS += intel intel_hasvk
 	endif
-	ifneq (,$(filter $(DEB_HOST_ARCH), amd64))
-		confflags_GALLIUM += -Dintel-clc=enabled
-	endif
+#	ifneq (,$(filter $(DEB_HOST_ARCH), amd64))
+#		confflags_GALLIUM += -Dintel-clc=enabled
+#	endif
+
+
+	confflags_GALLIUM += -Dintel-clc=disabled -Dmicrosoft-clc=disabled
 
 	# Non-Linux ports lack epoll, so wayland isn't ready yet:
 	# https://gitlab.freedesktop.org/wayland/wayland/-/issues/72
