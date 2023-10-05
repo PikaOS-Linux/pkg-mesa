@@ -41,6 +41,7 @@ Build-Depends:
  python3-mako,
  python3-ply,
  python3-setuptools,
+ rustfmt,
  flex,
  spirv-tools,
  bison,

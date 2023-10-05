@@ -43,6 +43,7 @@ Build-Depends:
  python3-setuptools,
  flex,
  spirv-tools,
+ rustfmt,
  bison,
  libelf-dev [amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc64 x32],
  libwayland-dev (>= 1.15.0) [linux-any],
