@@ -15,11 +15,9 @@ DEB_HOST_ARCH_CPU  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_CPU)
 # for finding the correct llvm-config when meson doesn't know about it yet
 LLVM_VERSION = 17
 export PATH:=/usr/lib/llvm-$(LLVM_VERSION)/bin/:$(PATH)
-export LIBCLANG_PATH=/usr/lib/llvm-$(LLVM_VERSION)/lib
+export LIBCLANG_PATH:=/usr/lib/llvm-$(LLVM_VERSION)/lib
 
 export DEB_BUILD_MAINT_OPTIONS=optimize=-lto
-# enable LTO everywhere:
-#confflags += -Db_lto=true
 
 ifeq (,$(filter $(DEB_HOST_ARCH), armhf ppc64el sh3 sh4))
 buildflags = \
@@ -30,15 +28,9 @@ else
   buildflags = \
 	$(shell DEB_CFLAGS_MAINT_APPEND="-Wall -fno-optimize-sibling-calls" DEB_CXXFLAGS_MAINT_APPEND="-Wall -fno-optimize-sibling-calls" dpkg-buildflags --export=configure)
   else
-    ifneq (,$(filter $(DEB_HOST_ARCH), ppc64el))
-    # Workaround for https://gitlab.freedesktop.org/mesa/mesa/-/issues/5315
-    buildflags = \
-	$(shell DEB_CFLAGS_MAINT_APPEND="-Wall -O2" DEB_CXXFLAGS_MAINT_APPEND="-Wall -O2" dpkg-buildflags --export=configure)
-    else
     # Workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83143
     buildflags = \
 	$(shell DEB_CFLAGS_MAINT_APPEND="-Wall -O1" DEB_CXXFLAGS_MAINT_APPEND="-Wall -O1" dpkg-buildflags --export=configure)
-    endif
   endif
 endif
 
@@ -51,13 +43,9 @@ confflags_DRI3 = -Ddri3=disabled
 confflags_OSMESA =  -Dosmesa=true
 confflags_SSE2 = -Dsse2=true
 
-LLVM_ARCHS     = amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el riscv64 s390x sparc64 x32
-#RUSTICL_ARCHS  = amd64 arm64 armel armhf mips64el mipsel ppc64el s390x
-RUSTICL_ARCHS	=	s390x
-#ifeq ($(DEB_DISTRIBUTION), jammy)
-#       RUSTICL_ARCHS  = arm64
-#endif
-VALGRIND_ARCHS = amd64 arm64 armhf i386 mips64el mipsel powerpc ppc64 ppc64el s390x
+LLVM_ARCHS     = amd64 arm64 armel armhf i386 mips64el powerpc ppc64 ppc64el riscv64 s390x sparc64 x32
+RUSTICL_ARCHS  = amd64 arm64 armel armhf mips64el powerpc ppc64 ppc64el riscv64 s390x x32
+VALGRIND_ARCHS = amd64 arm64 armhf i386 mips64el powerpc ppc64 ppc64el s390x
 WINE_ARCHS     = amd64 arm64 armel armhf i386 powerpc
 
 # hurd doesn't do direct rendering
@@ -75,8 +63,13 @@ else
 
   # radv/lavapipe needs LLVM and the Vulkan loader, so only build on the subset of
   # arches where we have LLVM enabled and where the Vulkan loader is built.
-  ifneq (,$(filter $(DEB_HOST_ARCH), amd64 arm64 armel armhf i386 mips64el mipsel powerpc ppc64 ppc64el s390x sparc64))
-	VULKAN_DRIVERS += amd swrast virtio
+  ifneq (,$(filter $(DEB_HOST_ARCH), amd64 arm64 armel armhf i386 mips64el powerpc ppc64 ppc64el s390x sparc64))
+  # drop virtio from armel, it doesn't build
+	ifneq (,$(filter $(DEB_HOST_ARCH), armel))
+		VULKAN_DRIVERS += amd swrast
+	else
+		VULKAN_DRIVERS += amd swrast virtio
+	endif
   endif
 
   # Only enable amd on riscv64, swrast needs CPU JIT support which doesn't work properly yet
@@ -92,7 +85,6 @@ else
 
 	# Freedreno requires arm in addition
 	ifneq (,$(filter arm arm64,$(DEB_HOST_ARCH_CPU)))
-#		GALLIUM_DRIVERS += freedreno asahi #9697
 		GALLIUM_DRIVERS += freedreno
 	endif
 
@@ -112,12 +104,11 @@ else
 		confflags_GALLIUM += -Dgallium-xa=enabled
 		VULKAN_DRIVERS += intel intel_hasvk
 	endif
-#	ifneq (,$(filter $(DEB_HOST_ARCH), amd64))
-#		confflags_GALLIUM += -Dintel-clc=enabled
-#	endif
-
-
-	confflags_GALLIUM += -Dintel-clc=disabled -Dmicrosoft-clc=disabled
+	ifneq (,$(filter $(DEB_HOST_ARCH), amd64))
+		confflags_GALLIUM += -Dintel-clc=disabled
+	else
+		confflags_GALLIUM += -Dintel-clc=disabled
+	endif
 
 	# Non-Linux ports lack epoll, so wayland isn't ready yet:
 	# https://gitlab.freedesktop.org/wayland/wayland/-/issues/72
@@ -129,9 +120,11 @@ else
 	endif
 
 	# WSL supports only amd64 and arm64
+	DOZEN_INSTALLED=no
 	ifneq (,$(filter amd64 arm64,$(DEB_HOST_ARCH)))
 		GALLIUM_DRIVERS += d3d12
-#		VULKAN_DRIVERS += microsoft-experimental
+		VULKAN_DRIVERS += microsoft-experimental
+		DOZEN_INSTALLED=yes
 	endif
   endif
 
@@ -160,8 +153,6 @@ else
 	# Build rusticl for archs where rustc is available
 	ifneq (,$(filter $(DEB_HOST_ARCH), $(RUSTICL_ARCHS)))
 		confflags_GALLIUM += -Dgallium-rusticl=true
-	else
-		confflags_GALLIUM += -Dgallium-rusticl=false
 	endif
 
 	# nine makes sense only on archs that build wine
@@ -178,10 +169,9 @@ else
   endif
 endif
 
-# bug #9762
-#ifeq ($(DEB_HOST_ARCH), i386)
-#	confflags_SSE2 = -Dsse2=false
-#endif
+ifeq ($(DEB_HOST_ARCH), i386)
+	confflags_SSE2 = -Dsse2=false
+endif
 
 empty:=
 space := $(empty) $(empty)
@@ -219,7 +209,6 @@ confflags += \
 	$(confflags_VALGRIND)
 
 override_dh_clean: regen_control
-	sed -i 's/-.*//' VERSION
 	rm -rf .pc
 	rm -rf build
 	rm -rf configure bin/config.guess bin/config.sub config.h.in
@@ -231,7 +220,6 @@ override_dh_clean: regen_control
 	dh_clean
 
 override_dh_auto_configure:
-	dpkg-parsechangelog | awk '/^Version:/ {print $$2}' > VERSION
 	$(buildflags) dh_auto_configure -- \
 		$(confflags)
 
@@ -257,7 +245,6 @@ override_dh_installchangelogs:
 override_dh_install:
 	# purge .la files
 	find debian/tmp/ -name '*.la' -exec rm '{}' ';'
-	find debian/tmp/usr/bin -name 'mme_*_sim_hw_test' -exec rm '{}' ';'
 
 	# Get rid of some files which aren't installed. Do not
 	# use -f to ensure we notice disappearing files:
@@ -295,6 +282,11 @@ override_dh_install:
 	   debian/mesa-opencl-icd/usr/lib/${DEB_HOST_MULTIARCH}/
   endif
 
+	# Conditionally enable install of dozen files
+	if test "$(DOZEN_INSTALLED)" = "yes"; then \
+		sed -i -e "s|#dozen\ ||g" debian/mesa-vulkan-drivers.install; \
+	fi
+
 	dh_install -a
 
 	# Install bug control and script:
@@ -308,7 +300,7 @@ override_dh_missing:
 	dh_missing --fail-missing
 
 override_dh_makeshlibs:
-	dh_makeshlibs -a -- -c0
+	dh_makeshlibs -a -- -c4
 
 %:
 	dh $@ --with quilt \
