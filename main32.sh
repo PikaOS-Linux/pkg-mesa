@@ -2,7 +2,7 @@
 set -e
 
 # Clone Upstream
-git clone https://gitlab.freedesktop.org/mesa/mesa -b mesa-23.3.0-rc5
+git clone https://gitlab.freedesktop.org/mesa/mesa -b mesa-24.0.1
 cp -rvf ./debian ./mesa/
 cd ./mesa
 for i in $(cat ../patches/series) ; do echo "Applying Patch: $i" && patch -Np1 -i ../patches/$i || bash -c "echo "Applying Patch $i Failed!" && exit 2"; done
